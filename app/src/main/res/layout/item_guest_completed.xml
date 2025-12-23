@@ -1,0 +1,64 @@
+<LinearLayout
+    android:background="@drawable/bg_selected_tab"
+    android:orientation="vertical"
+    android:layout_margin="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp">
+            <androidx.cardview.widget.CardView
+                android:elevation="0dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:cardCornerRadius="100dp">
+
+                <ImageView
+                    android:id="@+id/iv_user"
+                    android:scaleType="fitXY"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </androidx.cardview.widget.CardView>
+
+            <ImageView
+                android:translationZ="100dp"
+                android:id="@+id/iv_check"
+                android:layout_gravity="right|bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_circle_check"
+                tools:ignore="RtlHardcoded" />
+
+        </FrameLayout>
+
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextMediumBlack"
+            tools:text="Arkaprabha Mahata"/>
+        <TextView
+            android:textColor="@color/green"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/completed"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+</LinearLayout>

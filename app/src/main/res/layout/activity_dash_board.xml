@@ -1,0 +1,210 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- APP BAR -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:elevation="0dp"
+        android:background="@android:color/transparent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar">
+
+        <!-- TITLE TOOLBAR -->
+        <com.google.android.material.appbar.MaterialToolbar
+            app:titleTextColor="@color/primary"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:title="@string/capture_images"
+            app:layout_scrollFlags="scroll|enterAlways"/>
+
+        <!-- STICKY SEARCH BAR -->
+
+        <LinearLayout
+            app:layout_scrollFlags="enterAlways"
+            android:gravity="center"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_selected_tab"
+            android:padding="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_search"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:layout_marginLeft="8dp"
+                style="@style/TextRegularBlack"
+                android:textColorHint="@color/text_grey"
+                android:hint="@string/search_hint_text"/>
+
+        </LinearLayout>
+
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- CONTENT -->
+
+    <androidx.core.widget.NestedScrollView
+        android:scrollbars="none"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_margin="20dp"
+                android:id="@+id/progress"
+                style="@style/Loader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/rv_pending_guests"
+                    />
+        </LinearLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+    <!--<LinearLayout android:layout_width="match_parent"-->
+    <!--    android:layout_height="match_parent"-->
+    <!--    xmlns:tools="http://schemas.android.com/tools"-->
+    <!--    android:orientation="vertical"-->
+    <!--    xmlns:android="http://schemas.android.com/apk/res/android">-->
+
+    <!--    <LinearLayout-->
+    <!--        android:visibility="gone"-->
+    <!--        android:background="@drawable/bg_tab"-->
+    <!--        android:padding="4dp"-->
+    <!--        android:layout_margin="16dp"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content">-->
+
+    <!--        <TextView-->
+    <!--            android:textSize="14sp"-->
+    <!--            android:id="@+id/tv_pending"-->
+    <!--            android:background="@drawable/bg_selected_tab"-->
+    <!--            android:gravity="center"-->
+    <!--            android:text="@string/pending"-->
+    <!--            android:paddingTop="10dp"-->
+    <!--            android:paddingBottom="10dp"-->
+    <!--            android:layout_width="0dp"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_weight="1"/>-->
+
+    <!--        <TextView-->
+    <!--            android:textSize="14sp"-->
+    <!--            android:id="@+id/tv_completed"-->
+    <!--            android:gravity="center"-->
+    <!--            android:text="@string/completed"-->
+    <!--            android:paddingTop="10dp"-->
+    <!--            android:paddingBottom="10dp"-->
+    <!--            android:layout_width="0dp"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_weight="1"/>-->
+
+
+    <!--    </LinearLayout>-->
+
+    <!--    <LinearLayout-->
+    <!--        android:gravity="center"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:orientation="vertical">-->
+
+    <!--        <com.google.android.material.progressindicator.CircularProgressIndicator-->
+    <!--            android:layout_margin="20dp"-->
+    <!--            android:id="@+id/progress"-->
+    <!--            style="@style/Loader"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_gravity="center" />-->
+
+
+    <!--        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout-->
+    <!--            android:id="@+id/swipe_refresh"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent">-->
+
+    <!--            <androidx.recyclerview.widget.RecyclerView-->
+    <!--                android:visibility="gone"-->
+    <!--                android:id="@+id/rv_bookings"-->
+    <!--                tools:itemCount="10"-->
+    <!--                tools:listitem="@layout/item_bookings"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="match_parent"/>-->
+
+    <!--        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
+    <!--    </LinearLayout>-->
+
+    <!--</LinearLayout>-->
+
+
+<!--<LinearLayout android:orientation="vertical"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto">-->
+
+<!--    <com.google.android.material.appbar.MaterialToolbar-->
+<!--        android:id="@+id/toolbar"-->
+<!--        app:theme="@style/ThemeOverlay.Toolbar.Primary"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="?attr/actionBarSize"/>-->
+
+<!--    -->
+<!--    <LinearLayout-->
+<!--        android:gravity="center"-->
+<!--        android:orientation="vertical"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+<!--        <com.google.android.material.progressindicator.CircularProgressIndicator-->
+<!--            android:visibility="gone"-->
+<!--            android:layout_margin="20dp"-->
+<!--            android:id="@+id/progress"-->
+<!--            style="@style/Loader"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center" />-->
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/rv_pending_guests"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"/>-->
+<!--    </LinearLayout>-->
+<!--    -->
+
+<!--</LinearLayout>-->
