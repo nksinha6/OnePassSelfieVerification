@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.onepass.reception.R;
 import com.onepass.reception.activities.DashBoardActivity;
 import com.onepass.reception.models.response.PendingGuests;
+import com.onepass.reception.utils.AppUtils;
 
 import java.util.List;
 
@@ -43,7 +44,11 @@ public class PendingGuestAdapter extends RecyclerView.Adapter<PendingGuestAdapte
         holder.tvName.setText(pendingGuests.get(position).getName());
         holder.tvPhone.setText(pendingGuests.get(position).getPhoneCountryCode()+"-"+pendingGuests.get(position).getPhoneNumber());
         holder.itemView.setOnClickListener(v->{
-            ((DashBoardActivity)context).captureUserPicture(position);
+            if(AppUtils.isGpsEnabled(context)) {
+                ((DashBoardActivity) context).captureUserPicture(position);
+            }else{
+                AppUtils.showGpsDialog(context);
+            }
         });
     }
 

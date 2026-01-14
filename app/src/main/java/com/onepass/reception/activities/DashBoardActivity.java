@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.onepass.reception.R;
 import com.onepass.reception.adapters.PendingGuestAdapter;
 import com.onepass.reception.databinding.ActivityDashBoardBinding;
@@ -34,6 +36,7 @@ import com.onepass.reception.repos.imageverificationrepo.ImageVerificationRepo;
 import com.onepass.reception.repos.pendingguestsrepo.PendingGuestParams;
 import com.onepass.reception.repos.pendingguestsrepo.PendingGuestsRepo;
 import com.onepass.reception.utils.AppUtils;
+import com.onepass.reception.utils.LocationCallback;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,6 +59,7 @@ public class DashBoardActivity extends AppCompatActivity {
 
     LoadingDialog loadingDialog;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +72,26 @@ public class DashBoardActivity extends AppCompatActivity {
 
         setToolbarView();
 
-        init();
+        takePictureLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                isSuccess -> {
+                    if (isSuccess) {
+                        // imageUri contains the captured full-resolution image
+                        AppUtils.showLog(imageUri.toString());
+                        verifyLocation();
+                    }else{
+                        AppUtils.showToast(DashBoardActivity.this,getString(R.string.error_capturing_image));
+                    }
+                }
+        );
+
+        if(AppUtils.hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)){
+            init();
+        }else{
+            AppUtils.askPermission(this, Manifest.permission.ACCESS_FINE_LOCATION,AppUtils.LOCATION_PERMISSION_CODE);
+        }
+
+
     }
 
     private void setToolbarView() {
@@ -79,18 +102,7 @@ public class DashBoardActivity extends AppCompatActivity {
     private void init(){
         setUpList();
         fetchPendingGuests();
-        takePictureLauncher = registerForActivityResult(
-                new ActivityResultContracts.TakePicture(),
-                isSuccess -> {
-                    if (isSuccess) {
-                        // imageUri contains the captured full-resolution image
-                        AppUtils.showLog(imageUri.toString());
-                        verifyImage();
-                    }else{
-                        AppUtils.showToast(DashBoardActivity.this,getString(R.string.error_capturing_image));
-                    }
-                }
-        );
+
 
         binding.swipeRefresh.setOnRefreshListener(() -> {
             fetchPendingGuests();
@@ -158,7 +170,7 @@ public class DashBoardActivity extends AppCompatActivity {
         if(AppUtils.hasPermission(this, Manifest.permission.CAMERA)){
             openCamera();
         }else{
-            AppUtils.askPermission(this, Manifest.permission.CAMERA);
+            AppUtils.askPermission(this, Manifest.permission.CAMERA,AppUtils.CAMERA_PERMISSION_CODE);
         }
     }
 
@@ -172,6 +184,10 @@ public class DashBoardActivity extends AppCompatActivity {
                 AppUtils.showToast(DashBoardActivity.this,getString(R.string.please_grant_camera_permission_to_continue));
             }
         }
+        if (requestCode == AppUtils.LOCATION_PERMISSION_CODE) {
+            init();
+        }
+
     }
 
     public void openCamera(){
@@ -187,34 +203,52 @@ public class DashBoardActivity extends AppCompatActivity {
     }
 
 
-    public void verifyImage(){
+    public void verifyLocation(){
+        showLoader();
+        AppUtils.getLocation(this, new LocationCallback() {
+            @Override
+            public void onLocationFetched(double latitude, double longitude) {
+                AppUtils.showLog("Location: "+latitude+", "+longitude);
+                verifyImage(latitude,longitude);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                runOnUiThread(()->AppUtils.showToast(DashBoardActivity.this,errorMessage));
+                dismissLoader();
+            }
+        });
+    }
+
+    public void verifyImage(double latitude, double longitude){
 
         if(imageFile!=null){
-
-            loadingDialog.showLoader(DashBoardActivity.this);
-
             ImageVerificationParams params = new ImageVerificationParams();
-            params.setBookingId(guests.get(selectedPosition).getBookingId());
+            params.setBookingId(guests.get(selectedPosition).getId());
             params.setCountryCode(guests.get(selectedPosition).getPhoneCountryCode());
             params.setPhoneNumber(guests.get(selectedPosition).getPhoneNumber());
             params.setSelfieImage(imageFile);
+            params.setLatitude(latitude);
+            params.setLongitude(longitude);
 
             ImageVerificationRepo.verifyImage(
                     params,
                     imageVerification->{
                         runOnUiThread(()->{
-                            loadingDialog.dismissLoader();
+                            dismissLoader();
                             VerificationDialog.showDialog(DashBoardActivity.this,imageVerification);
-                            if(imageVerification.getFaceVerified()){
+
+                            if(!imageVerification.getResult().getFaceMatchResult().equalsIgnoreCase("NO")){
                                 guests.remove(selectedPosition);
                                 updateList();
                             }
+
                             imageClearing();
                         });
 
                     },
                     throwable -> {
-                        loadingDialog.dismissLoader();
+                        dismissLoader();
                         imageClearing();
                         AppUtils.showLog(throwable.getMessage());
                         runOnUiThread(()-> AppUtils.showToast(DashBoardActivity.this,getString(R.string.error_while_image_verification)));
@@ -222,8 +256,6 @@ public class DashBoardActivity extends AppCompatActivity {
             );
 
         }
-
-
     }
 
 
@@ -234,6 +266,14 @@ public class DashBoardActivity extends AppCompatActivity {
         imageFile = null;
         imageUri = null;
         selectedPosition = -1;
+    }
+
+
+    public void showLoader(){
+        loadingDialog.showLoader(DashBoardActivity.this);
+    }
+    public void dismissLoader(){
+        loadingDialog.dismissLoader();
     }
 
     @Override

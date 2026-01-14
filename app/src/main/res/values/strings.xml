@@ -44,4 +44,9 @@
     <string name="verification_successful">Verification Successful!</string>
     <string name="close">Close</string>
     <string name="verification_failed">Verification Failed!</string>
+    <string name="location_turn_on">Please turn on location to perform this activity!</string>
+    <string name="okay">Okay</string>
+    <string name="please_enable_location_permission">Please enable location permission!</string>
+    <string name="no_location_available">No location available</string>
+    <string name="face_does_not_match">Face does not match!</string>
 </resources>

@@ -25,8 +25,14 @@ public class ImageVerificationRepo {
         RequestBody phoneNumber =
                 RequestBody.create(params.getPhoneNumber(), MediaType.parse("text/plain"));
 
-        RequestBody bookingId =
-                RequestBody.create(params.getBookingId(), MediaType.parse("text/plain"));
+        RequestBody id =
+                RequestBody.create(params.getBookingId().toString(), MediaType.parse("text/plain"));
+
+        RequestBody latitude =
+                RequestBody.create(params.getLatitude().toString(), MediaType.parse("text/plain"));
+
+        RequestBody longitude =
+                RequestBody.create(params.getLongitude().toString(), MediaType.parse("text/plain"));
 
         // image part
         RequestBody imageRequestBody =
@@ -34,7 +40,7 @@ public class ImageVerificationRepo {
 
         MultipartBody.Part selfieImage =
                 MultipartBody.Part.createFormData(
-                        "selfieImage",
+                        "Selfie",
                         params.getSelfieImage().getName(),
                         imageRequestBody
                 );
@@ -45,7 +51,9 @@ public class ImageVerificationRepo {
                         AppUtils.getHeaders(),
                         countryCode,
                         phoneNumber,
-                        bookingId,
+                        id,
+//                        latitude,
+//                        longitude,
                         selfieImage
                 )
                 .enqueue(new Callback<ImageVerification>() {

@@ -15,6 +15,8 @@ public class VerificationDialog {
 
     public static void showDialog(Context context, ImageVerification verification){
 
+        boolean isVerified = !verification.getResult().getFaceMatchResult().equalsIgnoreCase("NO");
+
         Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_verification);
         dialog.setCancelable(false);
@@ -22,10 +24,10 @@ public class VerificationDialog {
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         TextView tv = dialog.findViewById(R.id.tv_message);
-        tv.setText(verification.getFaceVerified()? context.getString(R.string.verification_successful) : context.getString(R.string.verification_failed));
+        tv.setText(isVerified? context.getString(R.string.verification_successful) : context.getString(R.string.verification_failed));
 
         LottieAnimationView animationView = dialog.findViewById(R.id.lottie_view);
-        animationView.setAnimation(verification.getFaceVerified()?"anim_success.json":"anim_failure.json");
+        animationView.setAnimation(isVerified?"anim_success.json":"anim_failure.json");
 
         dialog.findViewById(R.id.btn_close).setOnClickListener(v->{
             dialog.dismiss();

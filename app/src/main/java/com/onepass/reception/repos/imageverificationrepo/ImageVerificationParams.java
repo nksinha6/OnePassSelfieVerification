@@ -5,8 +5,12 @@ import java.io.File;
 public class ImageVerificationParams {
     private String countryCode;
     private String phoneNumber;
-    private String bookingId;
+    private Integer id;
     private File selfieImage;
+    private Double latitude;
+    private Double longitude;
+
+
 
 
     public File getSelfieImage() {
@@ -17,12 +21,12 @@ public class ImageVerificationParams {
         this.selfieImage = selfieImage;
     }
 
-    public String getBookingId() {
-        return bookingId;
+    public Integer getBookingId() {
+        return id;
     }
 
-    public void setBookingId(String bookingId) {
-        this.bookingId = bookingId;
+    public void setBookingId(Integer bookingId) {
+        this.id = bookingId;
     }
 
     public String getPhoneNumber() {
@@ -39,5 +43,21 @@ public class ImageVerificationParams {
 
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }

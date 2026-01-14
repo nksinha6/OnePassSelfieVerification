@@ -60,7 +60,7 @@ dependencies {
 
     implementation 'com.airbnb.android:lottie:6.7.1'
 
-
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
 
 
 

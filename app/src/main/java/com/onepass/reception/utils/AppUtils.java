@@ -1,14 +1,17 @@
 package com.onepass.reception.utils;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,7 +20,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
 import com.onepass.reception.R;
+import com.onepass.reception.dialog.infodialog.InfoDialog;
+import com.onepass.reception.dialog.infodialog.InfoDialogParams;
 import com.onepass.reception.models.domain.Booking;
 
 import org.json.JSONArray;
@@ -37,6 +46,7 @@ import okhttp3.RequestBody;
 public class AppUtils {
 
     public static final int CAMERA_PERMISSION_CODE = 101;
+    public static final int LOCATION_PERMISSION_CODE = 102;
     public static final String images="images";
 
     public static boolean isValidPhone(String phone) {
@@ -84,11 +94,11 @@ public class AppUtils {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static void askPermission(Activity context, String permission){
+    public static void askPermission(Activity context, String permission, int permissionCode){
         ActivityCompat.requestPermissions(
                 context,
                 new String[]{permission},
-                CAMERA_PERMISSION_CODE
+                permissionCode
         );
     }
 
@@ -150,5 +160,79 @@ public class AppUtils {
         Map<String,String> headers = new HashMap<>();
         headers.put("Authorization","Bearer "+TokenProvider.getInstance().getAccessToken());
         return headers;
+    }
+
+    public static boolean isGpsEnabled(Context context) {
+
+        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception ex) {
+        }
+
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception ex) {
+        }
+
+        return gps_enabled;
+    }
+
+    public static void showGpsDialog(Context context) {
+
+        InfoDialogParams params = new InfoDialogParams(
+                context,
+                context.getString(R.string.location_turn_on),
+                context.getString(R.string.okay),
+                ()->{
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    context.startActivity(intent);
+                },
+                false,
+                null,
+                null
+
+        );
+
+        InfoDialog infoDialog = new InfoDialog(params);
+        infoDialog.showDialog();
+    }
+
+    public static void getLocation(Context context, LocationCallback locationCallback){
+        FusedLocationProviderClient fusedClient = LocationServices.getFusedLocationProviderClient(context);
+        CancellationTokenSource tokenSource = new CancellationTokenSource();
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationCallback.onError(context.getString(R.string.please_enable_location_permission));
+            return;
+        }
+        fusedClient.getCurrentLocation(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                tokenSource.getToken()
+        ).addOnSuccessListener(location -> {
+
+            // Cancel immediately on success
+            tokenSource.cancel();
+
+            if (location != null) {
+                locationCallback.onLocationFetched(location.getLatitude(),location.getLongitude());
+            } else {
+                fusedClient.getLastLocation()
+                        .addOnSuccessListener(lastLocation -> {
+                            if (lastLocation != null) {
+                                locationCallback.onLocationFetched(lastLocation.getLatitude(),lastLocation.getLongitude());
+                            } else {
+                                locationCallback.onError(context.getString(R.string.no_location_available));
+                                showLog("No location available");
+                            }
+                        });
+            }
+        }).addOnFailureListener(e -> {
+            tokenSource.cancel();
+            locationCallback.onError(e.getMessage());
+            showLog("No location available "+e.getMessage());
+        });
     }
 }

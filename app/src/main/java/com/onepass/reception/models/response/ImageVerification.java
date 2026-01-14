@@ -6,26 +6,15 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class ImageVerification implements Serializable {
-    @SerializedName("faceVerified")
+    @SerializedName("result")
     @Expose
-    private Boolean faceVerified;
-    @SerializedName("faceMatchScore")
-    @Expose
-    private Double faceMatchScore;
+    private ImageVerificationResult result;
 
-    public Boolean getFaceVerified() {
-        return faceVerified;
+    public ImageVerificationResult getResult() {
+        return result;
     }
 
-    public void setFaceVerified(Boolean faceVerified) {
-        this.faceVerified = faceVerified;
-    }
-
-    public Double getFaceMatchScore() {
-        return faceMatchScore;
-    }
-
-    public void setFaceMatchScore(Double faceMatchScore) {
-        this.faceMatchScore = faceMatchScore;
+    public void setResult(ImageVerificationResult result) {
+        this.result = result;
     }
 }

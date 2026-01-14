@@ -26,19 +26,21 @@ public interface ApiService {
             @Body RequestBody body
     );
 
-    @GET("/api/HotelGuestRead/pending_face_matches")
+    @GET("/api/HotelBookingRead/pending_face_matches")
     Call<List<PendingGuests>> getPendingImages(
             @HeaderMap Map<String,String> headers,
             @Query("bookingId") String bookingId
     );
 
     @Multipart
-    @POST("/api/FaceVerification/liveness")
+    @POST("/api/HotelBookingRead/selfie_match")
     Call<ImageVerification> verifyImage(
             @HeaderMap Map<String,String> headers,
-            @Part("countryCode") RequestBody countryCode,
+            @Part("phoneCountryCode") RequestBody countryCode,
             @Part("phoneNumber") RequestBody phoneNumber,
-            @Part("bookingId") RequestBody bookingId,
+            @Part("id") RequestBody bookingId,
+//            @Part("latitude") RequestBody latitude,
+//            @Part("longitude") RequestBody longitude,
             @Part MultipartBody.Part selfieImage
     );
 

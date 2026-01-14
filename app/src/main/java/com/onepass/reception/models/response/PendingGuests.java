@@ -27,7 +27,7 @@ public class PendingGuests implements Serializable {
     @SerializedName("status")
     @Expose
     private String status;
-    @SerializedName("name")
+    @SerializedName("fullName")
     @Expose
     private String name;
     @SerializedName("createdAt")
