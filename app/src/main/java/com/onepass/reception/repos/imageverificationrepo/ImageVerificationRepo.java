@@ -52,8 +52,8 @@ public class ImageVerificationRepo {
                         countryCode,
                         phoneNumber,
                         id,
-//                        latitude,
-//                        longitude,
+                        latitude,
+                        longitude,
                         selfieImage
                 )
                 .enqueue(new Callback<ImageVerification>() {

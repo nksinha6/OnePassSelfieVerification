@@ -39,8 +39,8 @@ public interface ApiService {
             @Part("phoneCountryCode") RequestBody countryCode,
             @Part("phoneNumber") RequestBody phoneNumber,
             @Part("id") RequestBody bookingId,
-//            @Part("latitude") RequestBody latitude,
-//            @Part("longitude") RequestBody longitude,
+            @Part("latitude") RequestBody latitude,
+            @Part("longitude") RequestBody longitude,
             @Part MultipartBody.Part selfieImage
     );
 
