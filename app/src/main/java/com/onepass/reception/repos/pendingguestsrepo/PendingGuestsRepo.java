@@ -6,6 +6,7 @@ import com.onepass.reception.network.ApiService;
 import com.onepass.reception.utils.AppUtils;
 import com.onepass.reception.utils.HttpStatusCodes;
 
+import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,7 +30,11 @@ public class PendingGuestsRepo {
                 if(response.code()== HttpStatusCodes.OK){
                     onSuccess.onSuccess(response.body());
                 }else {
-                    onError.onError(new Throwable("Error fetching pending images!"));
+                    try {
+                        onError.onError(new Throwable(response.errorBody().string()));
+                    } catch (Exception e){
+                        onError.onError(new Throwable("Error fetching pending images!"));
+                    }
                 }
             }
 

@@ -34,7 +34,9 @@ public class InfoDialog {
         closeBtn.setText(params.getButtonText());
 
         dialog.findViewById(R.id.btn_close).setOnClickListener((View v) -> {
-            params.getCallback().onButtonClick();
+            if(params.getCallback()!=null){
+                params.getCallback().onButtonClick();
+            }
             dialog.dismiss();
         });
 

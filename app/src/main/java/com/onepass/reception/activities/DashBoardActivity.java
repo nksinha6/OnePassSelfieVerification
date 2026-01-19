@@ -28,6 +28,8 @@ import com.onepass.reception.adapters.PendingGuestAdapter;
 import com.onepass.reception.databinding.ActivityDashBoardBinding;
 import com.onepass.reception.dialog.LoadingDialog;
 import com.onepass.reception.dialog.VerificationDialog;
+import com.onepass.reception.dialog.infodialog.InfoDialog;
+import com.onepass.reception.dialog.infodialog.InfoDialogParams;
 import com.onepass.reception.insets.InsetsHelper;
 import com.onepass.reception.models.response.ImageVerification;
 import com.onepass.reception.models.response.PendingGuests;
@@ -143,10 +145,25 @@ public class DashBoardActivity extends AppCompatActivity {
                 err->{
                     runOnUiThread(()->{
                         postService();
-                        AppUtils.showToast(DashBoardActivity.this,getString(R.string.error_fetching_details));
+                       showErrorDialog(err.getMessage());
                     });
                 }
         );
+    }
+
+    private void showErrorDialog(String message) {
+        InfoDialogParams pms = new InfoDialogParams(
+                DashBoardActivity.this,
+                getString(R.string.close),
+                message,
+                null,
+                true,
+                null,
+                null
+
+        );
+        InfoDialog infoDialog = new InfoDialog(pms);
+        infoDialog.showDialog();
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -224,7 +241,8 @@ public class DashBoardActivity extends AppCompatActivity {
 
         if(imageFile!=null){
             ImageVerificationParams params = new ImageVerificationParams();
-            params.setBookingId(guests.get(selectedPosition).getId());
+            params.setId(guests.get(selectedPosition).getId());
+            params.setBookingId(guests.get(selectedPosition).getBookingId());
             params.setCountryCode(guests.get(selectedPosition).getPhoneCountryCode());
             params.setPhoneNumber(guests.get(selectedPosition).getPhoneNumber());
             params.setSelfieImage(imageFile);
@@ -248,10 +266,12 @@ public class DashBoardActivity extends AppCompatActivity {
 
                     },
                     throwable -> {
-                        dismissLoader();
-                        imageClearing();
                         AppUtils.showLog(throwable.getMessage());
-                        runOnUiThread(()-> AppUtils.showToast(DashBoardActivity.this,getString(R.string.error_while_image_verification)));
+                        runOnUiThread(()-> {
+                            dismissLoader();
+                            showErrorDialog(throwable.getMessage());
+                        });
+                        imageClearing();
                     }
             );
 

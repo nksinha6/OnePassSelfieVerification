@@ -26,7 +26,10 @@ public class ImageVerificationRepo {
                 RequestBody.create(params.getPhoneNumber(), MediaType.parse("text/plain"));
 
         RequestBody id =
-                RequestBody.create(params.getBookingId().toString(), MediaType.parse("text/plain"));
+                RequestBody.create(params.getId().toString(), MediaType.parse("text/plain"));
+
+        RequestBody bookingId =
+                RequestBody.create(params.getBookingId(), MediaType.parse("text/plain"));
 
         RequestBody latitude =
                 RequestBody.create(params.getLatitude().toString(), MediaType.parse("text/plain"));
@@ -52,6 +55,7 @@ public class ImageVerificationRepo {
                         countryCode,
                         phoneNumber,
                         id,
+                        bookingId,
                         latitude,
                         longitude,
                         selfieImage

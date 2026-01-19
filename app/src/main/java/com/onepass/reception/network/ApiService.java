@@ -38,7 +38,8 @@ public interface ApiService {
             @HeaderMap Map<String,String> headers,
             @Part("phoneCountryCode") RequestBody countryCode,
             @Part("phoneNumber") RequestBody phoneNumber,
-            @Part("id") RequestBody bookingId,
+            @Part("id") RequestBody id,
+            @Part("bookingId") RequestBody bookingId,
             @Part("latitude") RequestBody latitude,
             @Part("longitude") RequestBody longitude,
             @Part MultipartBody.Part selfieImage

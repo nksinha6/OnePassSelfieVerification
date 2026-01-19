@@ -29,7 +29,7 @@
             android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TextSmallBlack"/>
+            style="@style/TextRegularBlack"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_close"

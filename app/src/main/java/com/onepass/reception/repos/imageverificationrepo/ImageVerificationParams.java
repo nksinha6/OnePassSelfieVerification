@@ -6,6 +6,7 @@ public class ImageVerificationParams {
     private String countryCode;
     private String phoneNumber;
     private Integer id;
+    private String bookingId;
     private File selfieImage;
     private Double latitude;
     private Double longitude;
@@ -21,12 +22,12 @@ public class ImageVerificationParams {
         this.selfieImage = selfieImage;
     }
 
-    public Integer getBookingId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setBookingId(Integer bookingId) {
-        this.id = bookingId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getPhoneNumber() {
@@ -59,5 +60,13 @@ public class ImageVerificationParams {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
     }
 }

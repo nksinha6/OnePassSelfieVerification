@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 
 import com.onepass.reception.R;
 import com.onepass.reception.databinding.ActivityMainBinding;
@@ -36,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
 
         EdgeToEdge.enable(this);
         InsetsHelper.applySystemBarInsets(this,binding.getRoot(),true);
