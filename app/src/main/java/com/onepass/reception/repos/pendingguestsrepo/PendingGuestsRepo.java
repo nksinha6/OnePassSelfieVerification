@@ -5,6 +5,7 @@ import com.onepass.reception.network.ApiClient;
 import com.onepass.reception.network.ApiService;
 import com.onepass.reception.utils.AppUtils;
 import com.onepass.reception.utils.HttpStatusCodes;
+import com.onepass.reception.utils.SessionManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,23 +25,28 @@ public class PendingGuestsRepo {
         apiService.getPendingImages(
                 AppUtils.getHeaders(),
                 params.getBookingId()
-        ).enqueue(new Callback<List<PendingGuests>>() {
+        ).enqueue(new Callback<>() {
+
             @Override
             public void onResponse(Call<List<PendingGuests>> call, Response<List<PendingGuests>> response) {
-                if(response.code()== HttpStatusCodes.OK){
+                if (response.code() == HttpStatusCodes.OK) {
                     onSuccess.onSuccess(response.body());
-                }else {
-                    try {
-                        onError.onError(new Throwable(response.errorBody().string()));
-                    } catch (Exception e){
-                        onError.onError(new Throwable("Error fetching pending images!"));
+                } else {
+                    if(!SessionManager.isExpired()) {
+                        try {
+                            onError.onError(new Throwable(response.errorBody().string()));
+                        } catch (Exception e) {
+                            onError.onError(new Throwable("Error fetching pending images!"));
+                        }
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<List<PendingGuests>> call, Throwable throwable) {
-                onError.onError(throwable);
+                if(!SessionManager.isExpired()) {
+                    onError.onError(throwable);
+                }
             }
         });
     }

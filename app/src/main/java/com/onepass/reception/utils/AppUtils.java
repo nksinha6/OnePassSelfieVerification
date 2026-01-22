@@ -25,6 +25,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.onepass.reception.R;
+import com.onepass.reception.activities.DashBoardActivity;
+import com.onepass.reception.activities.MainActivity;
 import com.onepass.reception.dialog.infodialog.InfoDialog;
 import com.onepass.reception.dialog.infodialog.InfoDialogParams;
 import com.onepass.reception.models.domain.Booking;
@@ -234,5 +236,29 @@ public class AppUtils {
             locationCallback.onError(e.getMessage());
             showLog("No location available "+e.getMessage());
         });
+    }
+
+    public static void logout(Context context) {
+        SharedPreferences shPref = getSharedPreferences(context);
+        shPref.edit().clear().commit();
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
+    }
+
+    public static void sessionExpired(Context appContext) {
+        InfoDialogParams params = new InfoDialogParams(
+                appContext,
+                appContext.getString(R.string.logout),
+                appContext.getString(R.string.your_session_has_expired_please_login_again),
+                ()->logout(appContext),
+                false,
+                null,
+                null
+        );
+
+        InfoDialog infoDialog = new InfoDialog(params);
+        infoDialog.showDialog();
+
     }
 }

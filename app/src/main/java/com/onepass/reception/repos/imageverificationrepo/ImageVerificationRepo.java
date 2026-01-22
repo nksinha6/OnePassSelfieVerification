@@ -4,6 +4,7 @@ import com.onepass.reception.models.response.ImageVerification;
 import com.onepass.reception.network.ApiClient;
 import com.onepass.reception.network.ApiService;
 import com.onepass.reception.utils.AppUtils;
+import com.onepass.reception.utils.SessionManager;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -68,13 +69,17 @@ public class ImageVerificationRepo {
                             ImageVerification verificationResponse = response.body();
                             successCallback.onSuccess(verificationResponse);
                         }catch (Exception e){
-                            failureCallback.onFailure(new Throwable("Error while verifying Image!"));
+                            if(!SessionManager.isExpired()) {
+                                failureCallback.onFailure(new Throwable("Error while verifying Image!"));
+                            }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ImageVerification> call, Throwable throwable) {
-                        failureCallback.onFailure(throwable);
+                        if(!SessionManager.isExpired()) {
+                            failureCallback.onFailure(throwable);
+                        }
                     }
                 });
     }

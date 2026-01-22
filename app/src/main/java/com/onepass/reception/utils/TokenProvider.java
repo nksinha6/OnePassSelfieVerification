@@ -38,10 +38,10 @@ public class TokenProvider {
     }
 
     public void saveAccessToken(String token) {
-        prefs.edit().putString("access_token", token).apply();
+        prefs.edit().putString("access_token", token).commit();
     }
 
     public void clear() {
-        prefs.edit().clear().apply();
+        prefs.edit().clear().commit();
     }
 }

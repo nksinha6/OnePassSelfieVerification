@@ -2,6 +2,8 @@ package com.onepass.reception.network;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.onepass.reception.interceptors.AuthInterceptor;
+import com.onepass.reception.utils.MyApp;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -25,8 +27,12 @@ public class ApiClient {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
+            AuthInterceptor authInterceptor = new AuthInterceptor(MyApp.appContext);
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
+                    .addInterceptor(authInterceptor)
                     .build();
 
             // Create Retrofit

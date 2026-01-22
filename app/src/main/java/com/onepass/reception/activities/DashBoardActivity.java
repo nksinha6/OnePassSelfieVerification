@@ -5,8 +5,11 @@ import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -38,13 +41,14 @@ import com.onepass.reception.repos.imageverificationrepo.ImageVerificationRepo;
 import com.onepass.reception.repos.pendingguestsrepo.PendingGuestParams;
 import com.onepass.reception.repos.pendingguestsrepo.PendingGuestsRepo;
 import com.onepass.reception.utils.AppUtils;
+import com.onepass.reception.utils.BaseActivity;
 import com.onepass.reception.utils.LocationCallback;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DashBoardActivity extends AppCompatActivity {
+public class DashBoardActivity extends BaseActivity {
 
     private ActivityDashBoardBinding binding;
 
@@ -301,5 +305,22 @@ public class DashBoardActivity extends AppCompatActivity {
         AppUtils.deleteAllCachedImages(this);
         super.onDestroy();
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_user, menu);
+        setupLogout(menu.findItem(R.id.menu_logout));
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    void setupLogout(MenuItem item){
+        item.getActionView().findViewById(R.id.btn_logout).setOnClickListener(v->{
+            AppUtils.logout(DashBoardActivity.this);
+        });
+    }
+
 
 }

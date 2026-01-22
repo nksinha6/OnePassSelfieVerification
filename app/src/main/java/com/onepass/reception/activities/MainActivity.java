@@ -23,6 +23,7 @@ import com.onepass.reception.network.ApiService;
 import com.onepass.reception.repos.loginrepo.LoginParams;
 import com.onepass.reception.repos.loginrepo.LoginRepo;
 import com.onepass.reception.utils.AppUtils;
+import com.onepass.reception.utils.SessionManager;
 
 import javax.xml.validation.Validator;
 
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         LoginRepo.login(
                 params,
                 response -> {
+                    SessionManager.reset();
                     saveData(response);
                     runOnUiThread(()->{
                         postService();
@@ -97,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("refresh_token",response.getRefreshToken());
         editor.putString("token_expires_at",response.getExpiresAt());
         editor.putBoolean("is_logged_in",true);
-        editor.apply();
         editor.commit();
     }
 

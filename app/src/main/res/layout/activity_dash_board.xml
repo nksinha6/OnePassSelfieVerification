@@ -14,12 +14,13 @@
 
         <!-- TITLE TOOLBAR -->
         <com.google.android.material.appbar.MaterialToolbar
-            app:titleTextColor="@color/primary"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:title="@string/capture_images"
-            app:layout_scrollFlags="scroll|enterAlways"/>
+            app:titleTextColor="@color/primary"
+            app:popupTheme="@style/ToolbarPopupTheme"
+            app:layout_scrollFlags="scroll|enterAlways" />
 
         <!-- STICKY SEARCH BAR -->
 

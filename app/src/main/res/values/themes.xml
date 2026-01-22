@@ -114,4 +114,13 @@
         <item name="postSplashScreenTheme">@style/Theme.Reception</item>
     </style>
 
+    <style name="ToolbarPopupTheme" parent="ThemeOverlay.MaterialComponents.Light">
+        <!-- Menu item text color -->
+        <item name="android:textColorPrimary">@color/dark_orange</item>
+
+        <!-- Optional: disabled menu color -->
+        <item name="android:textColorSecondary">@color/dark_orange</item>
+    </style>
+
+
 </resources>

@@ -49,4 +49,6 @@
     <string name="please_enable_location_permission">Please enable location permission!</string>
     <string name="no_location_available">No location available</string>
     <string name="face_does_not_match">Face does not match!</string>
+    <string name="logout">Logout</string>
+    <string name="your_session_has_expired_please_login_again">Your session has expired. Please login again.</string>
 </resources>
