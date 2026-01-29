@@ -1,5 +1,6 @@
 package com.onepass.reception.repos.imageverificationrepo;
 
+import com.onepass.reception.mocks.VerifyQrMock;
 import com.onepass.reception.models.response.ImageVerification;
 import com.onepass.reception.network.ApiClient;
 import com.onepass.reception.network.ApiService;
@@ -19,6 +20,12 @@ public class ImageVerificationRepo {
             OnSuccess successCallback,
             OnFailure failureCallback
     ) {
+
+        if (AppUtils.isTesting){
+            successCallback.onSuccess(new VerifyQrMock().onSuccess());
+            return;
+        }
+
         // text parts
         RequestBody countryCode =
                 RequestBody.create(params.getCountryCode(), MediaType.parse("text/plain"));

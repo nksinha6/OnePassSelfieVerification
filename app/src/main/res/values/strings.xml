@@ -47,8 +47,14 @@
     <string name="location_turn_on">Please turn on location to perform this activity!</string>
     <string name="okay">Okay</string>
     <string name="please_enable_location_permission">Please enable location permission!</string>
+    <string name="please_enable_camera_permission">Please enable camera permission!</string>
     <string name="no_location_available">No location available</string>
     <string name="face_does_not_match">Face does not match!</string>
     <string name="logout">Logout</string>
     <string name="your_session_has_expired_please_login_again">Your session has expired. Please login again.</string>
+    <string name="scan">Scan</string>
+    <string name="no_pending_guests_found">No pending guests found!</string>
+    <string name="guest_list">Guest List</string>
+    <string name="search_by_name_or_phone">Search by name or phone...</string>
+    <string name="place_the_qr_in_the_center_to_scan">Place the QR in the center to scan.</string>
 </resources>

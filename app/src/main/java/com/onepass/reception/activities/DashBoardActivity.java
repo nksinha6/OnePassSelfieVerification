@@ -2,30 +2,21 @@ package com.onepass.reception.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.PopupMenu;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.onepass.reception.R;
 import com.onepass.reception.adapters.PendingGuestAdapter;
 import com.onepass.reception.databinding.ActivityDashBoardBinding;
@@ -34,7 +25,6 @@ import com.onepass.reception.dialog.VerificationDialog;
 import com.onepass.reception.dialog.infodialog.InfoDialog;
 import com.onepass.reception.dialog.infodialog.InfoDialogParams;
 import com.onepass.reception.insets.InsetsHelper;
-import com.onepass.reception.models.response.ImageVerification;
 import com.onepass.reception.models.response.PendingGuests;
 import com.onepass.reception.repos.imageverificationrepo.ImageVerificationParams;
 import com.onepass.reception.repos.imageverificationrepo.ImageVerificationRepo;
@@ -59,11 +49,13 @@ public class DashBoardActivity extends BaseActivity {
 
     int selectedPosition = -1;
 
-    private ActivityResultLauncher<Uri> takePictureLauncher;
+
     private Uri imageUri;
     private File imageFile;
 
     LoadingDialog loadingDialog;
+
+    private ActivityResultLauncher<Intent> qrLauncher;
 
 
     @Override
@@ -78,18 +70,18 @@ public class DashBoardActivity extends BaseActivity {
 
         setToolbarView();
 
-        takePictureLauncher = registerForActivityResult(
-                new ActivityResultContracts.TakePicture(),
-                isSuccess -> {
-                    if (isSuccess) {
-                        // imageUri contains the captured full-resolution image
-                        AppUtils.showLog(imageUri.toString());
-                        verifyLocation();
-                    }else{
-                        AppUtils.showToast(DashBoardActivity.this,getString(R.string.error_capturing_image));
-                    }
-                }
-        );
+        qrLauncher =
+                registerForActivityResult(
+                        new ActivityResultContracts.StartActivityForResult(),
+                        result -> {
+                            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                                String contents = result.getData().getStringExtra("SCAN_RESULT");
+                                AppUtils.showLog("Scanned: " + contents);
+                                verifyLocation();
+                            }
+                        }
+                );
+
 
         if(AppUtils.hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)){
             init();
@@ -101,7 +93,7 @@ public class DashBoardActivity extends BaseActivity {
     }
 
     private void setToolbarView() {
-        binding.toolbar.setTitle(getString(R.string.capture_images));
+        binding.toolbar.setTitle(getString(R.string.guest_list));
         setSupportActionBar(binding.toolbar);
     }
 
@@ -123,10 +115,6 @@ public class DashBoardActivity extends BaseActivity {
         binding.rvPendingGuests.setLayoutManager(new LinearLayoutManager(this));
         pendingGuestsAdapter = new PendingGuestAdapter(DashBoardActivity.this,guests);
         binding.rvPendingGuests.setAdapter(pendingGuestsAdapter);
-        DividerItemDecoration divider =
-                new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-
-        binding.rvPendingGuests.addItemDecoration(divider);
     }
 
     private void fetchPendingGuests() {
@@ -140,11 +128,18 @@ public class DashBoardActivity extends BaseActivity {
                 params,
                 pendingGuests -> {
                     guests.clear();
-                    guests.addAll(pendingGuests);
-                    runOnUiThread(()->{
-                        postService();
-                        updateList();
-                    });
+                    if(pendingGuests.getPendingGuests()!=null && !pendingGuests.getPendingGuests().isEmpty()){
+                        guests.addAll(pendingGuests.getPendingGuests());
+                        runOnUiThread(()->{
+                            postService();
+                            updateList();
+                        });
+                    }else{
+                        runOnUiThread(()->{
+                            showErrorDialog(getString(R.string.no_pending_guests_found));
+                        });
+                    }
+
                 },
                 err->{
                     runOnUiThread(()->{
@@ -186,41 +181,35 @@ public class DashBoardActivity extends BaseActivity {
         binding.progress.setVisibility(View.VISIBLE);
     }
 
-    public void captureUserPicture(int position){
-        selectedPosition = position;
-        if(AppUtils.hasPermission(this, Manifest.permission.CAMERA)){
-            openCamera();
-        }else{
-            AppUtils.askPermission(this, Manifest.permission.CAMERA,AppUtils.CAMERA_PERMISSION_CODE);
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == AppUtils.CAMERA_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera();
-            } else {
-                AppUtils.showToast(DashBoardActivity.this,getString(R.string.please_grant_camera_permission_to_continue));
-            }
-        }
+
         if (requestCode == AppUtils.LOCATION_PERMISSION_CODE) {
-            init();
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                init();
+            }else {
+                InfoDialogParams params = new InfoDialogParams(
+                        this,
+                        getString(R.string.okay),
+                        getString(R.string.please_enable_location_permission),
+                        ()->AppUtils.askPermission(this, Manifest.permission.ACCESS_FINE_LOCATION,AppUtils.LOCATION_PERMISSION_CODE),
+                        false,
+                        null,
+                        null
+                );
+                InfoDialog infoDialog = new InfoDialog(params);
+                infoDialog.showDialog();
+            }
         }
 
     }
 
-    public void openCamera(){
-        imageFile = new File(getExternalCacheDir(), guests.get(selectedPosition).getName()+"-"+System.currentTimeMillis() + ".jpg");
 
-        imageUri = FileProvider.getUriForFile(
-                this,
-                getPackageName() + ".provider",
-                imageFile
-        );
-
-        takePictureLauncher.launch(imageUri);
+    public void openQRScanner(int position){
+        selectedPosition = position;
+        Intent intent = new Intent(this, QRScannerActivity.class);
+        qrLauncher.launch(intent);
     }
 
 
@@ -243,7 +232,6 @@ public class DashBoardActivity extends BaseActivity {
 
     public void verifyImage(double latitude, double longitude){
 
-        if(imageFile!=null){
             ImageVerificationParams params = new ImageVerificationParams();
             params.setId(guests.get(selectedPosition).getId());
             params.setBookingId(guests.get(selectedPosition).getBookingId());
@@ -264,8 +252,6 @@ public class DashBoardActivity extends BaseActivity {
                                 guests.remove(selectedPosition);
                                 updateList();
                             }
-
-                            imageClearing();
                         });
 
                     },
@@ -275,22 +261,13 @@ public class DashBoardActivity extends BaseActivity {
                             dismissLoader();
                             showErrorDialog(throwable.getMessage());
                         });
-                        imageClearing();
                     }
             );
 
-        }
     }
 
 
-    public void imageClearing(){
-        if(imageFile!=null){
-            imageFile.delete();
-        }
-        imageFile = null;
-        imageUri = null;
-        selectedPosition = -1;
-    }
+
 
 
     public void showLoader(){

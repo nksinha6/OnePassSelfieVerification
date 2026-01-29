@@ -47,6 +47,10 @@ import okhttp3.RequestBody;
 
 public class AppUtils {
 
+
+//    public static final boolean isTesting = false;
+    public static final boolean isTesting = true;
+
     public static final int CAMERA_PERMISSION_CODE = 101;
     public static final int LOCATION_PERMISSION_CODE = 102;
     public static final String images="images";

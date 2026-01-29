@@ -3,6 +3,7 @@ package com.onepass.reception.network;
 import com.onepass.reception.models.response.ImageVerification;
 import com.onepass.reception.models.response.LoginResponse;
 import com.onepass.reception.models.response.PendingGuests;
+import com.onepass.reception.repos.pendingguestsrepo.PendingGuestResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public interface ApiService {
     );
 
     @GET("/api/HotelBookingRead/pending_face_matches")
-    Call<List<PendingGuests>> getPendingImages(
+    Call<PendingGuestResponse> getPendingImages(
             @HeaderMap Map<String,String> headers,
             @Query("bookingId") String bookingId
     );

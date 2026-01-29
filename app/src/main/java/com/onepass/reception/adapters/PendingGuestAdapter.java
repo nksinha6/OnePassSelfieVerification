@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.onepass.reception.R;
 import com.onepass.reception.activities.DashBoardActivity;
 import com.onepass.reception.models.response.PendingGuests;
@@ -41,11 +42,11 @@ public class PendingGuestAdapter extends RecyclerView.Adapter<PendingGuestAdapte
     @Override
     public void onBindViewHolder(@NonNull PendingGuestAdapter.ViewHolder holder, int position) {
 
-        holder.tvName.setText(pendingGuests.get(position).getName());
+        holder.tvName.setText(pendingGuests.get(position).getFullName());
         holder.tvPhone.setText(pendingGuests.get(position).getPhoneCountryCode()+"-"+pendingGuests.get(position).getPhoneNumber());
-        holder.itemView.setOnClickListener(v->{
+        holder.btnScan.setOnClickListener(v->{
             if(AppUtils.isGpsEnabled(context)) {
-                ((DashBoardActivity) context).captureUserPicture(position);
+                ((DashBoardActivity) context).openQRScanner(position);
             }else{
                 AppUtils.showGpsDialog(context);
             }
@@ -61,18 +62,15 @@ public class PendingGuestAdapter extends RecyclerView.Adapter<PendingGuestAdapte
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvName,tvPhone;
-        LinearLayout llCapture,llMain;
-
-        ImageView ivUser, ivCheck;
+        ImageView ivUser;
+        MaterialButton btnScan;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tv_name);
             tvPhone = itemView.findViewById(R.id.tv_phone);
-            llCapture = itemView.findViewById(R.id.ll_capture);
             ivUser = itemView.findViewById(R.id.iv_user);
-            ivCheck = itemView.findViewById(R.id.iv_check);
-            llMain = itemView.findViewById(R.id.main);
+            btnScan = itemView.findViewById(R.id.btn_scan);
         }
     }
 }

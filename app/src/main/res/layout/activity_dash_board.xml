@@ -49,7 +49,7 @@
                 android:layout_marginLeft="8dp"
                 style="@style/TextRegularBlack"
                 android:textColorHint="@color/text_grey"
-                android:hint="@string/search_hint_text"/>
+                android:hint="@string/search_by_name_or_phone"/>
 
         </LinearLayout>
 

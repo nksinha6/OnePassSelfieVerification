@@ -1,5 +1,6 @@
 package com.onepass.reception.repos.pendingguestsrepo;
 
+import com.onepass.reception.mocks.PendingGuestMock;
 import com.onepass.reception.models.response.PendingGuests;
 import com.onepass.reception.network.ApiClient;
 import com.onepass.reception.network.ApiService;
@@ -21,18 +22,23 @@ public class PendingGuestsRepo {
             OnError onError
     ){
 
+
+        if(AppUtils.isTesting){
+            onSuccess.onSuccess(PendingGuestMock.mockSuccess());
+            return;
+        }
+
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
         apiService.getPendingImages(
                 AppUtils.getHeaders(),
                 params.getBookingId()
         ).enqueue(new Callback<>() {
-
             @Override
-            public void onResponse(Call<List<PendingGuests>> call, Response<List<PendingGuests>> response) {
+            public void onResponse(Call<PendingGuestResponse> call, Response<PendingGuestResponse> response) {
                 if (response.code() == HttpStatusCodes.OK) {
                     onSuccess.onSuccess(response.body());
                 } else {
-                    if(!SessionManager.isExpired()) {
+                    if (!SessionManager.isExpired()) {
                         try {
                             onError.onError(new Throwable(response.errorBody().string()));
                         } catch (Exception e) {
@@ -43,11 +49,15 @@ public class PendingGuestsRepo {
             }
 
             @Override
-            public void onFailure(Call<List<PendingGuests>> call, Throwable throwable) {
-                if(!SessionManager.isExpired()) {
+            public void onFailure(Call<PendingGuestResponse> call, Throwable throwable) {
+                if (!SessionManager.isExpired()) {
                     onError.onError(throwable);
                 }
             }
         });
+
+
+
+
     }
 }
